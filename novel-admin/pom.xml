@@ -14,7 +14,8 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.1.RELEASE</version>
+<!--        <version>2.0.1.RELEASE</version>-->
+        <version>2.1.8.RELEASE</version>
         <relativePath/>
     </parent>
 
@@ -183,7 +184,6 @@
             <version>2.9.0</version>
         </dependency>
 
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -224,31 +224,31 @@
         <!--<scope>provided</scope>-->
         <!--</dependency>-->
     </dependencies>
-  <!--  <build>
-        <plugins>
-            &lt;!&ndash;<plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <executable>true</executable>
-                </configuration>
-            </plugin>&ndash;&gt;
-            &lt;!&ndash;SpringBoot项目默认使用spring-boot-maven-plugin，要打成被其他项目引用的jar包，需要更换此插件&ndash;&gt;
-            &lt;!&ndash; <plugin>
-                 <groupId>org.apache.maven.plugins</groupId>
-                 <artifactId>maven-compiler-plugin</artifactId>
-                 <configuration>
-                     <source>1.8</source>
-                     <target>1.8</target>
-                     <encoding>UTF-8</encoding>
-                 </configuration>
-             </plugin>&ndash;&gt;
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>-->
+    <!--  <build>
+          <plugins>
+              &lt;!&ndash;<plugin>
+                  <groupId>org.springframework.boot</groupId>
+                  <artifactId>spring-boot-maven-plugin</artifactId>
+                  <configuration>
+                      <executable>true</executable>
+                  </configuration>
+              </plugin>&ndash;&gt;
+              &lt;!&ndash;SpringBoot项目默认使用spring-boot-maven-plugin，要打成被其他项目引用的jar包，需要更换此插件&ndash;&gt;
+              &lt;!&ndash; <plugin>
+                   <groupId>org.apache.maven.plugins</groupId>
+                   <artifactId>maven-compiler-plugin</artifactId>
+                   <configuration>
+                       <source>1.8</source>
+                       <target>1.8</target>
+                       <encoding>UTF-8</encoding>
+                   </configuration>
+               </plugin>&ndash;&gt;
+              <plugin>
+                  <groupId>org.springframework.boot</groupId>
+                  <artifactId>spring-boot-maven-plugin</artifactId>
+              </plugin>
+          </plugins>
+      </build>-->
     <build>
         <plugins>
             <plugin>
@@ -308,18 +308,18 @@
                                     <fileset dir="target/lib"/>
                                 </move>
                                 <copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar"
-                                      tofile="${project.build.directory}/build/${project.artifactId}.jar" />
+                                      tofile="${project.build.directory}/build/${project.artifactId}.jar"/>
 
                                 <fixcrlf srcdir="${basedir}/src/main/build/scripts" eol="unix"/>
                                 <copy todir="${project.build.directory}/build/bin">
                                     <fileset dir="${basedir}/src/main/build/scripts">
-                                        <include name="*.sh" />
-                                        <include name="*.txt" />
-                                        <include name="*.bat" />
+                                        <include name="*.sh"/>
+                                        <include name="*.txt"/>
+                                        <include name="*.bat"/>
                                     </fileset>
                                 </copy>
                                 <zip destfile='${project.build.directory}/build/${project.artifactId}.zip'>
-                                    <zipfileset filemode="755" dir= '${project.build.directory}/build/' />
+                                    <zipfileset filemode="755" dir='${project.build.directory}/build/'/>
                                 </zip>
                             </tasks>
                         </configuration>

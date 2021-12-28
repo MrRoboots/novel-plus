@@ -19,8 +19,8 @@ spring:
     active: dev
   servlet:
     multipart:
-      max-file-size: 30Mb
-      max-request-size: 30Mb
+      max-file-size: 30MB
+      max-request-size: 30MB
   devtools:
     restart:
       enabled: true
