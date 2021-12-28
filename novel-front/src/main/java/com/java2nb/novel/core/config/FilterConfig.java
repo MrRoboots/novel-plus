@@ -51,7 +51,7 @@ public class FilterConfig{
         //
         registration.addUrlPatterns(StringUtils.split(urlPatterns, ","));
         //
-        registration.setName("xssFilter");
+        registration.setName("xssFilters");
         //
         registration.setOrder(Integer.MAX_VALUE);
         Map<String, String> initParameters = new HashMap<>(2);

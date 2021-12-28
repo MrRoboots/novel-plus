@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@WebFilter(filterName = "xssFilter", urlPatterns = "/*", asyncSupported = true)
+@WebFilter(filterName = "xssFilters", urlPatterns = "/*", asyncSupported = true)
 @Component
 public class XssFilter implements Filter {
 
