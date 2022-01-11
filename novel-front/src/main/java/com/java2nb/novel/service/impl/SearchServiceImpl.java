@@ -2,14 +2,14 @@ package com.java2nb.novel.service.impl;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.xxyopen.model.page.PageBean;
 import com.java2nb.novel.core.enums.ResponseStatus;
+import com.java2nb.novel.entity.Book;
+import com.java2nb.novel.service.SearchService;
+import com.java2nb.novel.vo.BookSpVO;
+import com.java2nb.novel.vo.EsBookVO;
+import io.github.xxyopen.model.page.PageBean;
 import io.github.xxyopen.util.StringUtil;
 import io.github.xxyopen.web.exception.BusinessException;
-import com.java2nb.novel.entity.Book;
-import com.java2nb.novel.vo.BookSpVO;
-import com.java2nb.novel.service.SearchService;
-import com.java2nb.novel.vo.EsBookVO;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Count;
 import io.searchbox.core.CountResult;
@@ -61,7 +61,7 @@ public class SearchServiceImpl implements SearchService {
         esBookVO.setLastIndexUpdateTime(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(book.getLastIndexUpdateTime()));
 
         IndexRequest request = new IndexRequest(INDEX);
-        request.id(book.getId()+"");
+        request.id(book.getId() + "");
         request.source(new ObjectMapper().writeValueAsString(esBookVO), XContentType.JSON);
         IndexResponse index = restHighLevelClient.index(request, RequestOptions.DEFAULT);
 
@@ -104,17 +104,16 @@ public class SearchServiceImpl implements SearchService {
         boolQueryBuilder.filter(QueryBuilders.rangeQuery("wordCount").gte(params.getWordCountMin()).lte(params.getWordCountMax()));
 
         if (params.getUpdateTimeMin() != null) {
-            boolQueryBuilder.filter(QueryBuilders.rangeQuery("lastIndexUpdateTime").gte(new SimpleDateFormat("yyyy/MM/dd HH:mm").format(params.getUpdateTimeMin())));
+            boolQueryBuilder.filter(QueryBuilders.rangeQuery("lastIndexUpdateTime").gte(new SimpleDateFormat("yyyy/MM"
+                    + "/dd HH:mm").format(params.getUpdateTimeMin())));
         }
-
 
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(boolQueryBuilder);
 
 
-        Count count = new Count.Builder().addIndex(INDEX)
-                .query(searchSourceBuilder.toString()).build();
+        Count count = new Count.Builder().addIndex(INDEX).query(searchSourceBuilder.toString()).build();
         CountResult results = jestClient.execute(count);
         Double total = results.getCount();
 
@@ -155,7 +154,8 @@ public class SearchServiceImpl implements SearchService {
                     List hitsList = (List) hitsMap.get("hits");
                     if (hitsList.size() > 0 && result.getSourceAsString() != null) {
 
-                        JavaType jt = new ObjectMapper().getTypeFactory().constructParametricType(ArrayList.class, EsBookVO.class);
+                        JavaType jt = new ObjectMapper().getTypeFactory().constructParametricType(ArrayList.class,
+                                EsBookVO.class);
                         bookList = new ObjectMapper().readValue("[" + result.getSourceAsString() + "]", jt);
 
                         if (bookList != null) {
@@ -200,9 +200,8 @@ public class SearchServiceImpl implements SearchService {
             }
             return new PageBean<>(page, pageSize, total.longValue(), bookList);
         }
-       throw new BusinessException(ResponseStatus.ES_SEARCH_FAIL);
+        throw new BusinessException(ResponseStatus.ES_SEARCH_FAIL);
     }
-
 
 
 }

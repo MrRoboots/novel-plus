@@ -65,7 +65,7 @@ public class CrawlController {
      * @return
      */
     @PostMapping("testParse")
-    public RestResult<Object> testParse(String rule,String url,String isRefresh){
+    public RestResult<Object> testParse(String rule,String url,String isRefresh) throws InterruptedException {
 
         Map<String,Object> resultMap=new HashMap<>();
         String html =null;
