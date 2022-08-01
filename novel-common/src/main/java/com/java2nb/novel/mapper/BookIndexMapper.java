@@ -4,10 +4,12 @@ import static com.java2nb.novel.mapper.BookIndexDynamicSqlSupport.*;
 import static org.mybatis.dynamic.sql.SqlBuilder.*;
 
 import com.java2nb.novel.entity.BookIndex;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Generated;
+
 import org.apache.ibatis.annotations.DeleteProvider;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
@@ -35,7 +37,7 @@ import org.mybatis.dynamic.sql.util.mybatis3.MyBatis3Utils;
 @Mapper
 public interface BookIndexMapper {
     @Generated("org.mybatis.generator.api.MyBatisGenerator")
-    BasicColumn[] selectList = BasicColumn.columnList(id, bookId, indexNum, indexName, wordCount, isVip, createTime, updateTime);
+    BasicColumn[] selectList = BasicColumn.columnList(id, bookId, indexNum, indexName, wordCount, isVip, bookPrice, storageType, createTime, updateTime);
 
     @Generated("org.mybatis.generator.api.MyBatisGenerator")
     @SelectProvider(type=SqlProviderAdapter.class, method="select")
@@ -67,6 +69,8 @@ public interface BookIndexMapper {
         @Result(column="index_name", property="indexName", jdbcType=JdbcType.VARCHAR),
         @Result(column="word_count", property="wordCount", jdbcType=JdbcType.INTEGER),
         @Result(column="is_vip", property="isVip", jdbcType=JdbcType.TINYINT),
+        @Result(column="book_price", property="bookPrice", jdbcType=JdbcType.INTEGER),
+        @Result(column="storage_type", property="storageType", jdbcType=JdbcType.VARCHAR),
         @Result(column="create_time", property="createTime", jdbcType=JdbcType.TIMESTAMP),
         @Result(column="update_time", property="updateTime", jdbcType=JdbcType.TIMESTAMP)
     })
@@ -88,7 +92,7 @@ public interface BookIndexMapper {
 
     @Generated("org.mybatis.generator.api.MyBatisGenerator")
     default int deleteByPrimaryKey(Long id_) {
-        return delete(c -> 
+        return delete(c ->
             c.where(id, isEqualTo(id_))
         );
     }
@@ -102,6 +106,8 @@ public interface BookIndexMapper {
             .map(indexName).toProperty("indexName")
             .map(wordCount).toProperty("wordCount")
             .map(isVip).toProperty("isVip")
+            .map(bookPrice).toProperty("bookPrice")
+            .map(storageType).toProperty("storageType")
             .map(createTime).toProperty("createTime")
             .map(updateTime).toProperty("updateTime")
         );
@@ -116,6 +122,8 @@ public interface BookIndexMapper {
             .map(indexName).toProperty("indexName")
             .map(wordCount).toProperty("wordCount")
             .map(isVip).toProperty("isVip")
+            .map(bookPrice).toProperty("bookPrice")
+            .map(storageType).toProperty("storageType")
             .map(createTime).toProperty("createTime")
             .map(updateTime).toProperty("updateTime")
         );
@@ -130,6 +138,8 @@ public interface BookIndexMapper {
             .map(indexName).toPropertyWhenPresent("indexName", record::getIndexName)
             .map(wordCount).toPropertyWhenPresent("wordCount", record::getWordCount)
             .map(isVip).toPropertyWhenPresent("isVip", record::getIsVip)
+            .map(bookPrice).toPropertyWhenPresent("bookPrice", record::getBookPrice)
+            .map(storageType).toPropertyWhenPresent("storageType", record::getStorageType)
             .map(createTime).toPropertyWhenPresent("createTime", record::getCreateTime)
             .map(updateTime).toPropertyWhenPresent("updateTime", record::getUpdateTime)
         );
@@ -170,6 +180,8 @@ public interface BookIndexMapper {
                 .set(indexName).equalTo(record::getIndexName)
                 .set(wordCount).equalTo(record::getWordCount)
                 .set(isVip).equalTo(record::getIsVip)
+                .set(bookPrice).equalTo(record::getBookPrice)
+                .set(storageType).equalTo(record::getStorageType)
                 .set(createTime).equalTo(record::getCreateTime)
                 .set(updateTime).equalTo(record::getUpdateTime);
     }
@@ -182,6 +194,8 @@ public interface BookIndexMapper {
                 .set(indexName).equalToWhenPresent(record::getIndexName)
                 .set(wordCount).equalToWhenPresent(record::getWordCount)
                 .set(isVip).equalToWhenPresent(record::getIsVip)
+                .set(bookPrice).equalToWhenPresent(record::getBookPrice)
+                .set(storageType).equalToWhenPresent(record::getStorageType)
                 .set(createTime).equalToWhenPresent(record::getCreateTime)
                 .set(updateTime).equalToWhenPresent(record::getUpdateTime);
     }
@@ -194,6 +208,8 @@ public interface BookIndexMapper {
             .set(indexName).equalTo(record::getIndexName)
             .set(wordCount).equalTo(record::getWordCount)
             .set(isVip).equalTo(record::getIsVip)
+            .set(bookPrice).equalTo(record::getBookPrice)
+            .set(storageType).equalTo(record::getStorageType)
             .set(createTime).equalTo(record::getCreateTime)
             .set(updateTime).equalTo(record::getUpdateTime)
             .where(id, isEqualTo(record::getId))
@@ -208,6 +224,8 @@ public interface BookIndexMapper {
             .set(indexName).equalToWhenPresent(record::getIndexName)
             .set(wordCount).equalToWhenPresent(record::getWordCount)
             .set(isVip).equalToWhenPresent(record::getIsVip)
+            .set(bookPrice).equalToWhenPresent(record::getBookPrice)
+            .set(storageType).equalToWhenPresent(record::getStorageType)
             .set(createTime).equalToWhenPresent(record::getCreateTime)
             .set(updateTime).equalToWhenPresent(record::getUpdateTime)
             .where(id, isEqualTo(record::getId))

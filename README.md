@@ -1,94 +1,81 @@
-[![index]( https://s1.ax1x.com/2020/07/03/NOSA5q.jpg )]( https://cloud.tencent.com/act/cps/redirect?redirect=1052&cps_key=736e609d66e0ac4e57813316cec6fd0b&from=console )
+[![index]( https://youdoc.github.io/img/tencent.jpg )]( https://cloud.tencent.com/act/cps/redirect?redirect=2446&cps_key=736e609d66e0ac4e57813316cec6fd0b&from=console )
 
-# 小说精品屋-plus
+<p align="center">
+    <a href='https://github.com/201206030/novel-plus'><img alt="Github stars" src="https://img.shields.io/github/stars/201206030/novel-plus?logo=github"></a>
+    <a href='https://github.com/201206030/novel-plus'><img alt="Github forks" src="https://img.shields.io/github/forks/201206030/novel-plus?logo=github"></a>
+    <a href='https://gitee.com/novel_dev_team/novel-plus'><img alt="Gitee stars" src="https://gitee.com/novel_dev_team/novel-plus/badge/star.svg?theme=gitee"></a>
+    <a href='https://gitee.com/novel_dev_team/novel-plus'><img alt="Gitee forks" src="https://gitee.com/novel_dev_team/novel-plus/badge/fork.svg?theme=gitee"></a>
+    <a href="https://github.com/201206030/novel-plus"><img src="https://visitor-badge.glitch.me/badge?page_id=201206030.novel-plus" alt="visitors"></a>
+</p>
 
-#### 新项目：小说精品屋-微服务版
+## 官网
 
-基于小说精品屋-plus构建的Spring Cloud 微服务小说门户平台。
+https://novel.xxyopen.com
 
-Gitee仓库地址： https://gitee.com/xiongxyang/novel-cloud
+## 学习版
 
-GitHub仓库地址： https://github.com/201206030/novel-cloud
+[基于 Spring Boot 3 + Vue 3 开发的前后端分离学习型小说项目](https://github.com/201206030/novel)
 
-#### 示例网站
+## 微服务版
 
-[网站1，点击前往](http://www.bqmfxs.cn)
+[GitHub](https://github.com/201206030/novel-cloud) | [码云](https://gitee.com/novel_dev_team/novel-cloud)
 
-[网站2，点击前往](http://iyuedu.space)
+## 演示地址
 
-[网站3，点击前往](http://suxiange.com)
+[点击前往](http://47.106.243.172:8888/)
 
-[网站4，点击前往](http://ruoshu.com)
+## 项目介绍
 
-[网站5，点击前往](https://www.jingjiao.net)
+novel-plus 是一个多端（PC、WAP）阅读，功能完善的原创文学 CMS
+系统。由前台门户系统、作家后台管理系统、平台后台管理系统和爬虫管理系统等多个子系统构成，包括小说推荐、作品检索、小说排行、小说阅读、小说评论、会员中心、作家专区等功能，支持自定义多模版、可拓展的多种小说内容存储方式（内置数据库分表存储和
+TXT 文本存储）、阅读主题切换、多爬虫源自动采集和更新数据、会员充值、订阅模式、新闻发布和实时统计报表。
 
-[网站6，点击前往](http://www.shucheng.in)
-
-#### 前言
-
-小说精品屋-plus致力于打造一个完整的商用小说门户平台，使用前建议先阅读此文档。
-
-#### 项目介绍
-
-[小说精品屋](https://github.com/201206030/fiction_house)是一个多平台（web、安卓app、微信小程序）、功能完善的小说弹幕网站，包含精品小说专区、轻小说专区和漫画专区。包括小说/漫画分类、小说/漫画搜索、小说/漫画排行、完本小说/漫画、小说/漫画评分、小说/漫画在线阅读、小说/漫画书架、小说/漫画阅读记录、小说下载、小说弹幕、小说/漫画自动爬取、小说内容自动分享到微博、邮件自动推广、链接自动推送到百度搜索引擎等功能。包含电脑端、移动端、微信小程序等多个平台，现已开源web端、安卓端、小程序端源码。 
-
-小说精品屋-plus是在小说精品屋的基础上，重新进行了数据库设计、代码重构和功能增强，提升了程序整体的可读性和性能，增加了很多商用特性。主要升级如下：
-
-- [x] 数据库重新设计，结构调整。
-- [x] 服务端代码重构，MyBatis3升级为MyBatis3DynamicSql。
-- [x] 移动站与PC站站点分离，浏览器自动识别跳转。
-- [x] PC站UI更新。
-- [x] 新闻模块。
-- [x] 排行榜。
-- [x] 小说评论模块。
-- [x] 阅读主题模块。
-- [x] 作家专区。
-- [x] 充值。
-- [x] 后台管理系统。
-- [x] 爬虫管理系统。
-
-#### 项目结构
+## 项目结构
 
 ```
 novel-plus -- 父工程
 ├── novel-common -- 通用模块
-├── novel-front -- 前台门户系统
-├── novel-crawl -- 爬虫管理系统
-└── novel-admin -- 后台管理系统
+├── novel-front -- 前台门户&作家后台
+├── novel-crawl -- 爬虫
+├── novel-admin -- 管理后台
+└── templates -- 前端模版
 ```
 
-#### 技术选型
+## 技术选型
 
-| 技术                 | 说明                                                         
-| -------------------- | ---------------------------
-| SpringBoot           | Spring应用快速开发脚手架     
-| MyBatis              | 持久层ORM框架 
-| MyBatis Dynamic SQL  | Mybatis动态sql
-| PageHelper           | MyBatis分页插件
-| MyBatisGenerator     | 持久层代码生成插件
-| Sharding-Jdbc        | 代码层分库分表中间件
-| JJWT                 | JWT登录支持  
-| SpringSecurity       | 安全框架                           
-| Shiro                | 安全框架  
-| Ehcache              | Java进程内缓存框架(默认缓存)  
-| Redis                | 分布式缓存(缓存替换方案，默认关闭，一行配置开启)                               
-| ElasticSearch        | 搜索引擎(搜索增强方案，默认关闭，一行配置开启)                      
-| RabbitMq             | 消息队列(流量削峰，默认关闭，一行配置开启)  
-| OSS                  | 阿里云对象存储服务(图片存储方式之一，一行配置即可切换) 
-| FastDfs              |开源轻量级分布式文件系统(图片存储方式之一，一行配置即可切换)                      
-| Redisson             | 实现分布式锁                                       
-| Lombok               | 简化对象封装工具                                                                               
-| Docker               | 应用容器引擎   
-| Mysql                | 数据库服务   
-| Thymeleaf            | 模板引擎     
-| Layui                | 前端UI                    
-                 
+| 技术                  | 说明
+|---------------------| ---------------------------
+| Spring Boot         | Spring 应用快速开发脚手架
+| MyBatis             | 持久层 ORM 框架
+| MyBatis Dynamic SQL | Mybatis 动态 sql
+| PageHelper          | MyBatis 分页插件
+| MyBatis Generator    | 持久层代码生成插件
+| Sharding-JDBC       | 代码层分库分表中间件
+| JJWT                | JWT 登录支持
+| Spring Security      | 安全框架
+| Apache Shiro               | 安全框架
+| Ehcache             | Java 进程内缓存框架(默认缓存)
+| Redis               | 分布式缓存(缓存替换方案，默认关闭，一行配置开启)
+| Elasticsearch       | 搜索引擎(搜索增强方案，默认关闭，一行配置开启)
+| RabbitMQ            | 消息队列(流量削峰，默认关闭，一行配置开启)
+| Aliyun OSS          | 阿里云对象存储服务(图片存储方式之一，一行配置即可切换)
+| FastDFS             | 开源轻量级分布式文件系统(图片存储方式之一，一行配置即可切换)
+| Redisson            | 实现分布式锁
+| Lombok              | 简化对象封装工具
+| Docker              | 应用容器引擎
+| MySQL               | 数据库服务
+| Thymeleaf           | 模板引擎
+| Layui               | 前端 UI 框架
+
+## 项目截图
+
+### 橙色主题模版截图
 
 #### PC站截图
 
 1. 首页
 
-![img](https://oscimg.oschina.net/oscnet/up-bbb1c7f72e183327bff754a9fa8bb75223e.png)
+![img](https://s3.ax1x.com/2020/12/27/r5400A.png)
 
 2. 分类索引页
 
@@ -96,7 +83,7 @@ novel-plus -- 父工程
 
 3. 搜索页
 
-![img](https://gitee.com/xiongxyang/novel-plus/raw/release_v2.1.0/assets/QQ20200520-215756.png)
+![img](https://s3.ax1x.com/2020/12/27/r5TO8x.png)
 
 ![img](https://oscimg.oschina.net/oscnet/up-ed5f689557718924acac76bc3ebca36afcb.png)
 
@@ -126,7 +113,11 @@ novel-plus -- 父工程
 
 ![img](https://oscimg.oschina.net/oscnet/up-30766372cc7f56480ff1d7d55198204f6ea.png)
 
-![img](https://oscimg.oschina.net/oscnet/up-9737995e465b86f3bee3211221f6c3b8a56.png)
+![img](https://s3.ax1x.com/2020/11/17/DVFiQI.png)
+
+![img](https://s1.ax1x.com/2020/11/09/B7X5oF.png)
+
+![img](https://s1.ax1x.com/2020/11/09/B7XLsx.png)
 
 10. 购买
 
@@ -136,81 +127,107 @@ novel-plus -- 父工程
 
 #### 手机站截图
 
-1. 首页
+<p align="center">
 
-   ![index](https://gitee.com/xiongxyang/novel-plus/raw/release_v2.1.0/assets/QQ%E5%9B%BE%E7%89%8720191018162208.jpg)
+   <img src="https://s3.ax1x.com/2020/12/27/r5447n.jpg"  width="300" />
+   <img src="https://s3.ax1x.com/2020/12/27/r55xKg.jpg"  width="300" />
+   <img src="https://s3.ax1x.com/2020/12/28/roZWOf.jpg"  width="300" />
+   <img src="https://s3.ax1x.com/2020/12/27/r55Stx.jpg"  width="300" />
 
-2. 小说详情页
 
-   ![微信图片_20190904181558](https://gitee.com/xiongxyang/novel-plus/raw/release_v2.1.0/assets/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190904181558.png)
 
-3. 目录页
-
-   ![QQ图片20191018161901](https://gitee.com/xiongxyang/novel-plus/raw/release_v2.1.0/assets/QQ%E5%9B%BE%E7%89%8720191108022250.png)
-
-4. 小说阅读页
-
-   ![QQ图片20191018161901](https://gitee.com/xiongxyang/novel-plus/raw/release_v2.1.0/assets/QQ%E5%9B%BE%E7%89%8720191018161901.png)
+</p>
 
 #### 爬虫管理系统截图
 
-![img](https://gitee.com/xiongxyang/novel-plus/raw/release_v2.1.2/assets/crawl_index.png)
+![img](https://s1.ax1x.com/2020/11/03/BsOgbD.png)
+
+![img](https://s1.ax1x.com/2020/11/03/BsOHr8.png)
 
 #### 后台管理系统截图
 
 ![img](https://oscimg.oschina.net/oscnet/up-0552343538674a22a64819834100558f39b.png)
 
+![img](https://s3.ax1x.com/2020/12/01/DWgLNT.png)
+
+![img](https://s3.ax1x.com/2020/12/01/DfmRCd.png)
+
 ![img](https://oscimg.oschina.net/oscnet/up-faf5dda7320674c29a1772bc0c81d74762e.png)
 
-#### 安装步骤
+### 深色主题模版截图
 
-##### 数据库安装：
+#### PC站截图
 
-1. 安装MySQL软件。
-2. 修改MySQL`max_allowed_packet `配置（建议100M）。
-3. 新建数据库，设置编码为utf8mb4。
-4. 执行sql/novel_plus.sql脚本文件。
+1. 首页
 
-##### 爬虫管理系统安装：
+   ![index](https://static.oschina.net/uploads/img/202006/24151811_wIus.png)
 
-1.  修改novel-common模块下application-dev.yml文件中的数据库的配置。
-2. 修改novel-crawl模块下application.yml文件中的管理员账号密码。
-3. 启动程序，打开浏览器，默认8081端口访问。
-4. 选择已有或新增爬虫源（支持自定义爬虫规则），点击`开启`按钮，开始爬取小说数据。
+#### 手机站截图
 
-##### 前台小说门户安装：
+<p align="center">
+      <img src="https://static.oschina.net/uploads/img/202006/24151812_OOob.jpg"  width="300" />
+      <img src="https://static.oschina.net/uploads/img/202006/24151812_ZosF.png"  width="300" />
+      <img src="https://static.oschina.net/uploads/img/202006/24151812_Krva.png"  width="300" />
+      <img src="https://static.oschina.net/uploads/img/202006/24151813_fDgT.png"  width="300" />
 
-1. 修改novel-common模块下application-dev.yml文件中的数据库的配置。
-2. 启动程序，打开浏览器，默认8080端口访问。
+</p>
 
-**喜欢此项目的可以给我的GitHub和Gitee加个Star支持一下 。**
+### 蓝色主题模版截图（更新中）
 
-#### 其他安装教程
+![QQ图片20191018161901](https://s3.ax1x.com/2020/12/27/r5Fe0A.png)
 
-包安装教程：[点击前往](https://my.oschina.net/java2nb/blog/4272630) 
 
-宝塔安装教程（非官方）：[点击前往](https://www.daniao.org/9166.html) 
+## 源码安装教程
 
-docker安装教程：[点击前往](https://my.oschina.net/java2nb/blog/4271989)
+[点此查看](http://xxyopen.com/2022/07/18/doc/novel-plus/install/source.html)
 
-#### 代码仓库
+## 包安装教程
 
- Gitee仓库地址： https://gitee.com/xiongxyang/novel-plus
+[点此查看](https://xxyopen.com/2022/07/18/doc/novel-plus/install/package.html)
 
- GitHub仓库地址： https://github.com/201206030/novel-plus 
+## 宝塔安装教程
 
-#### QQ交流群
+[点此查看](https://xxyopen.com/2022/07/18/doc/novel-plus/install/bt.html)
 
-![mini-code](https://s1.ax1x.com/2020/10/31/BUQVeI.png)
+## 增值服务
 
-#### 捐赠支持
+[点此查看](https://novel.xxyopen.com/service.htm)
 
-开源项目不易，若此项目能得到你的青睐，可以捐赠支持作者持续开发与维护。 
+## 更多
 
-![mini-code](https://s1.ax1x.com/2020/10/31/BUQJwq.png)
+- [谷歌搜索](https://www.google.com/search?q=%E5%B0%8F%E8%AF%B4%E7%B2%BE%E5%93%81%E5%B1%8B)
 
-#### 备注
+## 代码仓库
 
-精品小说屋所有相关项目均已在开源中国公开，感兴趣的可进入[开源中国](https://www.oschina.net/p/fiction_house)按关键字`精品小说屋`搜索。
+GitHub 仓库地址： https://github.com/201206030/novel-plus
 
-[![index](https://s1.ax1x.com/2020/07/03/NOSuMF.jpg)](https://www.aliyun.com/minisite/goods?userCode=uf4nasee )
+Gitee 仓库地址： https://gitee.com/novel_dev_team/novel-plus
+
+## QQ 交流群
+
+[点击前往官网查看](https://xiongxyang.gitee.io/service.htm)
+
+## 微信交流群
+
+微信群人数超过 200 人不能分享二维码，请关注公众号“**xxyopen**”回复关键词“**微信群**”。
+
+## 微信公众号
+
+发布最新更新资讯、最新前端模版、最新爬虫规则、文档教程等。
+
+![img](https://youdoc.github.io/img/qrcode_for_gh.jpg)
+
+## 赞赏支持
+
+开源项目不易，若此项目能得到你的青睐，那么你可以赞赏支持作者持续开发与维护。
+
+- 服务器的费用也是一笔开销
+- 编写更完备的文档教程
+- 发布更多前端模版和爬虫规则
+- 一杯咖啡
+
+![img](https://s1.ax1x.com/2020/10/31/BUQJwq.png)
+
+## 免责声明
+
+本项目提供的爬虫工具仅用于采集项目初期的测试数据，请勿用于商业盈利。 用户使用本系统从事任何违法违规的事情，一切后果由用户自行承担，作者不承担任何责任。

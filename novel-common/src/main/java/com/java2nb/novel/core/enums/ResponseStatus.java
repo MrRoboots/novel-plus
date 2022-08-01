@@ -1,5 +1,6 @@
 package com.java2nb.novel.core.enums;
 
+import io.github.xxyopen.model.resp.IResultCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,27 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public enum ResponseStatus {
-
-    /**
-     * 请求成功
-     * */
-    OK(200,"SUCCESS"),
-
-    /**
-     * 服务器异常
-     * */
-    ERROR(500,"未知异常，请联系管理员！"),
-
-    /**
-     * 参数错误
-     * */
-    PARAM_ERROR(400,"非法参数！"),
-
-    /**
-     * 拒绝访问
-     * */
-    FORBIDDEN(403,"拒绝访问！"),
+public enum ResponseStatus implements IResultCode {
 
 
     /**
@@ -68,6 +49,12 @@ public enum ResponseStatus {
      * */
     ES_SEARCH_FAIL(9001,"搜索引擎查询错误！"),
 
+    /**
+     * 文件相关错误
+     * */
+    FILE_DIR_MAKE_FAIL(10001,"目录创建失败"),
+    FILE_NOT_IMAGE(10002,"请上传图片类型的文件"),
+    FILE_SIZE_LIMIT(10003,"文件大小超出限制"),
 
     /**
      * 其他通用错误

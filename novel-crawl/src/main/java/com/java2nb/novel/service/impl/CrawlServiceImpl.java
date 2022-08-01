@@ -2,20 +2,29 @@ package com.java2nb.novel.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
+import io.github.xxyopen.model.page.PageBean;
 import com.java2nb.novel.core.cache.CacheKey;
 import com.java2nb.novel.core.cache.CacheService;
 import com.java2nb.novel.core.crawl.CrawlParser;
 import com.java2nb.novel.core.crawl.RuleBean;
 import com.java2nb.novel.core.enums.ResponseStatus;
-import com.java2nb.novel.core.exception.BusinessException;
-import com.java2nb.novel.core.utils.IdWorker;
-import com.java2nb.novel.core.utils.SpringUtil;
-import com.java2nb.novel.core.utils.ThreadUtil;
-import com.java2nb.novel.entity.*;
+import io.github.xxyopen.model.page.builder.pagehelper.PageBuilder;
+import io.github.xxyopen.util.IdWorker;
+import io.github.xxyopen.util.ThreadUtil;
+import io.github.xxyopen.web.exception.BusinessException;
+import io.github.xxyopen.web.util.BeanUtil;
+import com.java2nb.novel.entity.Book;
+import com.java2nb.novel.entity.CrawlSingleTask;
 import com.java2nb.novel.entity.CrawlSource;
-import com.java2nb.novel.mapper.*;
+import com.java2nb.novel.mapper.CrawlSingleTaskDynamicSqlSupport;
+import com.java2nb.novel.mapper.CrawlSingleTaskMapper;
+import com.java2nb.novel.mapper.CrawlSourceDynamicSqlSupport;
+import com.java2nb.novel.mapper.CrawlSourceMapper;
 import com.java2nb.novel.service.BookService;
 import com.java2nb.novel.service.CrawlService;
+import com.java2nb.novel.vo.CrawlSingleTaskVO;
+import com.java2nb.novel.vo.CrawlSourceVO;
+import io.github.xxyopen.web.util.SpringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -23,17 +32,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.mybatis.dynamic.sql.render.RenderingStrategies;
 import org.mybatis.dynamic.sql.select.render.SelectStatementProvider;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.java2nb.novel.core.utils.HttpUtil.getByHttpClient;
-import static com.java2nb.novel.mapper.BookDynamicSqlSupport.crawlBookId;
-import static com.java2nb.novel.mapper.BookDynamicSqlSupport.crawlSourceId;
+import static com.java2nb.novel.core.utils.HttpUtil.getByHttpClientWithChrome;
 import static com.java2nb.novel.mapper.CrawlSourceDynamicSqlSupport.*;
-import static org.mybatis.dynamic.sql.SqlBuilder.*;
+import static org.mybatis.dynamic.sql.SqlBuilder.isEqualTo;
 import static org.mybatis.dynamic.sql.select.SelectDSL.select;
 
 /**
@@ -51,8 +58,9 @@ public class CrawlServiceImpl implements CrawlService {
 
     private final BookService bookService;
 
-
     private final CacheService cacheService;
+
+    private final IdWorker idWorker = IdWorker.INSTANCE;
 
 
     @Override
@@ -63,16 +71,36 @@ public class CrawlServiceImpl implements CrawlService {
         crawlSourceMapper.insertSelective(source);
 
     }
-
     @Override
-    public List<CrawlSource> listCrawlByPage(int page, int pageSize) {
+    public void updateCrawlSource(CrawlSource source) {
+        if(source.getId()!=null){
+            Optional<CrawlSource> opt=crawlSourceMapper.selectByPrimaryKey(source.getId());
+            if(opt.isPresent()) {
+                CrawlSource crawlSource =opt.get();
+                if (crawlSource.getSourceStatus() == (byte) 1) {
+                    //关闭
+                    openOrCloseCrawl(crawlSource.getId(),(byte)0);
+                }
+                Date currentDate = new Date();
+                crawlSource.setUpdateTime(currentDate);
+                crawlSource.setCrawlRule(source.getCrawlRule());
+                crawlSource.setSourceName(source.getSourceName());
+                crawlSourceMapper.updateByPrimaryKey(crawlSource);
+            }
+        }
+    }
+    @Override
+    public PageBean<CrawlSource> listCrawlByPage(int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         SelectStatementProvider render = select(id, sourceName, sourceStatus, createTime, updateTime)
                 .from(crawlSource)
                 .orderBy(updateTime)
                 .build()
                 .render(RenderingStrategies.MYBATIS3);
-        return crawlSourceMapper.selectMany(render);
+        List<CrawlSource> crawlSources = crawlSourceMapper.selectMany(render);
+        PageBean<CrawlSource> pageBean = PageBuilder.build(crawlSources);
+        pageBean.setList(BeanUtil.copyList(crawlSources, CrawlSourceVO.class));
+        return pageBean;
     }
 
     @SneakyThrows
@@ -111,11 +139,7 @@ public class CrawlServiceImpl implements CrawlService {
                 //按分类开始爬虫解析任务
                 for (int i = 1; i < 8; i++) {
                     final int catId = i;
-                    Thread thread = new Thread(() -> {
-
-                        parseBookList(catId, ruleBean, sourceId);
-
-                    });
+                    Thread thread = new Thread(() -> CrawlServiceImpl.this.parseBookList(catId, ruleBean, sourceId));
                     thread.start();
                     //thread加入到监控缓存中
                     threadIds.add(thread.getId());
@@ -144,7 +168,7 @@ public class CrawlServiceImpl implements CrawlService {
     @Override
     public void addCrawlSingleTask(CrawlSingleTask singleTask) {
 
-        if(bookService.queryIsExistByBookNameAndAuthorName(singleTask.getBookName(),singleTask.getAuthorName())){
+        if (bookService.queryIsExistByBookNameAndAuthorName(singleTask.getBookName(), singleTask.getAuthorName())) {
             throw new BusinessException(ResponseStatus.BOOK_EXISTS);
 
         }
@@ -155,14 +179,17 @@ public class CrawlServiceImpl implements CrawlService {
     }
 
     @Override
-    public List<CrawlSingleTask> listCrawlSingleTaskByPage(int page, int pageSize) {
+    public PageBean<CrawlSingleTask> listCrawlSingleTaskByPage(int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
         SelectStatementProvider render = select(CrawlSingleTaskDynamicSqlSupport.crawlSingleTask.allColumns())
                 .from(CrawlSingleTaskDynamicSqlSupport.crawlSingleTask)
                 .orderBy(CrawlSingleTaskDynamicSqlSupport.createTime.descending())
                 .build()
                 .render(RenderingStrategies.MYBATIS3);
-        return crawlSingleTaskMapper.selectMany(render);
+        List<CrawlSingleTask> crawlSingleTasks = crawlSingleTaskMapper.selectMany(render);
+        PageBean<CrawlSingleTask> pageBean = PageBuilder.build(crawlSingleTasks);
+        pageBean.setList(BeanUtil.copyList(crawlSingleTasks, CrawlSingleTaskVO.class));
+        return pageBean;
     }
 
     @Override
@@ -173,28 +200,38 @@ public class CrawlServiceImpl implements CrawlService {
     @Override
     public CrawlSingleTask getCrawlSingleTask() {
 
-         List<CrawlSingleTask> list = crawlSingleTaskMapper.selectMany(select(CrawlSingleTaskDynamicSqlSupport.crawlSingleTask.allColumns())
+        List<CrawlSingleTask> list = crawlSingleTaskMapper.selectMany(select(CrawlSingleTaskDynamicSqlSupport.crawlSingleTask.allColumns())
                 .from(CrawlSingleTaskDynamicSqlSupport.crawlSingleTask)
-                .where(CrawlSingleTaskDynamicSqlSupport.taskStatus,isEqualTo((byte)2))
-                 .orderBy(CrawlSingleTaskDynamicSqlSupport.createTime)
-                 .limit(1)
+                .where(CrawlSingleTaskDynamicSqlSupport.taskStatus, isEqualTo((byte) 2))
+                .orderBy(CrawlSingleTaskDynamicSqlSupport.createTime)
+                .limit(1)
                 .build()
                 .render(RenderingStrategies.MYBATIS3));
 
-         return list.size() > 0 ? list.get(0) : null;
+        return list.size() > 0 ? list.get(0) : null;
     }
 
     @Override
     public void updateCrawlSingleTask(CrawlSingleTask task, Byte status) {
         byte excCount = task.getExcCount();
-        excCount+=1;
+        excCount += 1;
         task.setExcCount(excCount);
-        if(status == 1 || excCount == 5){
+        if (status == 1 || excCount == 5) {
             //当采集成功或者采集次数等于5，则更新采集最终状态，并停止采集
             task.setTaskStatus(status);
         }
         crawlSingleTaskMapper.updateByPrimaryKeySelective(task);
 
+    }
+
+    @Override
+    public CrawlSource getCrawlSource(Integer id) {
+            Optional<CrawlSource> opt=crawlSourceMapper.selectByPrimaryKey(id);
+            if(opt.isPresent()) {
+                CrawlSource crawlSource =opt.get();
+                return crawlSource;
+            }
+            return null;
     }
 
     /**
@@ -211,20 +248,23 @@ public class CrawlServiceImpl implements CrawlService {
 
             try {
 
-                if(StringUtils.isNotBlank(ruleBean.getCatIdRule().get("catId" + catId))) {
+                if (StringUtils.isNotBlank(ruleBean.getCatIdRule().get("catId" + catId))) {
                     //拼接分类URL
                     String catBookListUrl = ruleBean.getBookListUrl()
                             .replace("{catId}", ruleBean.getCatIdRule().get("catId" + catId))
                             .replace("{page}", page + "");
 
-                    String bookListHtml = getByHttpClient(catBookListUrl);
+                    String bookListHtml = getByHttpClientWithChrome(catBookListUrl);
                     if (bookListHtml != null) {
                         Pattern bookIdPatten = Pattern.compile(ruleBean.getBookIdPatten());
                         Matcher bookIdMatcher = bookIdPatten.matcher(bookListHtml);
                         boolean isFindBookId = bookIdMatcher.find();
                         while (isFindBookId) {
                             try {
-                                if(Thread.currentThread().isInterrupted()){
+                                //1.阻塞过程（使用了 sleep,同步锁的 wait,socket 中的 receiver,accept 等方法时）
+                                //捕获中断异常InterruptedException来退出线程。
+                                //2.非阻塞过程中通过判断中断标志来退出线程。
+                                if (Thread.currentThread().isInterrupted()) {
                                     return;
                                 }
 
@@ -251,8 +291,8 @@ public class CrawlServiceImpl implements CrawlService {
 
                     }
                 }
-            }catch (Exception e){
-                log.error(e.getMessage(),e);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
             }
 
             page += 1;
@@ -263,39 +303,47 @@ public class CrawlServiceImpl implements CrawlService {
 
     @Override
     public boolean parseBookAndSave(int catId, RuleBean ruleBean, Integer sourceId, String bookId) {
-        Book book = CrawlParser.parseBook(ruleBean, bookId);
-        if(book.getBookName() == null || book.getAuthorName() == null){
-            return false;
-        }
-        //这里只做新书入库，查询是否存在这本书
-        Book existBook = bookService.queryBookByBookNameAndAuthorName(book.getBookName(), book.getAuthorName());
-        //如果该小说不存在，则可以解析入库，但是标记该小说正在入库，30分钟之后才允许再次入库
-        if (existBook == null) {
-            //没有该书，可以入库
-            book.setCatId(catId);
-            //根据分类ID查询分类
-            book.setCatName(bookService.queryCatNameByCatId(catId));
-            if (catId == 7) {
-                //女频
-                book.setWorkDirection((byte) 1);
-            } else {
-                //男频
-                book.setWorkDirection((byte) 0);
+
+        final AtomicBoolean parseResult = new AtomicBoolean(false);
+
+        CrawlParser.parseBook(ruleBean, bookId, book -> {
+            if (book.getBookName() == null || book.getAuthorName() == null) {
+                return;
             }
-            book.setCrawlBookId(bookId);
-            book.setCrawlSourceId(sourceId);
-            book.setCrawlLastTime(new Date());
-            book.setId(new IdWorker().nextId());
-            //解析章节目录
-            Map<Integer, List> indexAndContentList = CrawlParser.parseBookIndexAndContent(bookId, book, ruleBean, new HashMap<>(0));
+            //这里只做新书入库，查询是否存在这本书
+            Book existBook = bookService.queryBookByBookNameAndAuthorName(book.getBookName(), book.getAuthorName());
+            //如果该小说不存在，则可以解析入库，但是标记该小说正在入库，30分钟之后才允许再次入库
+            if (existBook == null) {
+                //没有该书，可以入库
+                book.setCatId(catId);
+                //根据分类ID查询分类
+                book.setCatName(bookService.queryCatNameByCatId(catId));
+                if (catId == 7) {
+                    //女频
+                    book.setWorkDirection((byte) 1);
+                } else {
+                    //男频
+                    book.setWorkDirection((byte) 0);
+                }
+                book.setCrawlBookId(bookId);
+                book.setCrawlSourceId(sourceId);
+                book.setCrawlLastTime(new Date());
+                book.setId(idWorker.nextId());
+                //解析章节目录
+                boolean parseIndexContentResult = CrawlParser.parseBookIndexAndContent(bookId, book, ruleBean, new HashMap<>(0), chapter -> {
+                    bookService.saveBookAndIndexAndContent(book, chapter.getBookIndexList(), chapter.getBookContentList());
+                });
+                parseResult.set(parseIndexContentResult);
 
-            bookService.saveBookAndIndexAndContent(book, (List<BookIndex>) indexAndContentList.get(CrawlParser.BOOK_INDEX_LIST_KEY), (List<BookContent>) indexAndContentList.get(CrawlParser.BOOK_CONTENT_LIST_KEY));
+            } else {
+                //只更新书籍的爬虫相关字段
+                bookService.updateCrawlProperties(existBook.getId(), sourceId, bookId);
+                parseResult.set(true);
+            }
+        });
 
-        } else {
-            //只更新书籍的爬虫相关字段
-            bookService.updateCrawlProperties(existBook.getId(), sourceId, bookId);
-        }
-        return true;
+        return parseResult.get();
+
     }
 
     @Override

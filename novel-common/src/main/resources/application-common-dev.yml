@@ -1,6 +1,6 @@
 spring:
   profiles:
-    include: [common]
+    include: [ common ]
   main:
     allow-bean-definition-overriding: true
   #Redis服务器IP
@@ -23,10 +23,11 @@ spring:
     #连接超时时间（毫秒）
     timeout: 30000
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/novel_plus?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/novel_biz?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: test123456
     driver-class-name: com.mysql.cj.jdbc.Driver
+
 
 ####使用shardingJdbc时，
 ####所有的jdbcType都不能是LONGVARCHAR,否则会导致java.io.NotSerializableException: java.io.StringReader错误
@@ -53,25 +54,30 @@ sharding:
         props:
           sql.show: true
         tables:
-          book_content:  #book_content表
+          book_content: #book_content表
             key-generator-column-name: id  #主键
             actual-data-nodes: ds${0}.book_content${0..9}  #数据节点
             #            database-strategy:  #分库策略
             #              inline:
             #                sharding-column: book_id
             #                algorithm-expression: ds${book_id % 10}
-            table-strategy:  #分表策略
+            table-strategy: #分表策略
               inline:
                 shardingColumn: index_id
                 algorithm-expression: book_content${index_id % 10}
 
 
-
-
-
-
-pic:
+content:
   save:
-    type: 2 #图片保存方式, 1不保存，使用爬取的网络图片 ，2保存在自己的存储介质
-    storage: local #存储介质，local：本地，OSS：阿里云对象存储，fastDfs：分布式文件系统
-    path: /var/pic  #图片保存路径
+    storage: db #存储介质，db：数据库，file：txt文本
+    path: /Users/xiongxiaoyang/books  #txt小说文本保存路径
+
+# HTTP 代理配置
+http:
+  proxy:
+    # 是否开启 HTTP 代理，true-开启，false-不开启
+    enabled: false
+    # 代理 IP
+    ip: u493.kdltps.com
+    # 代理端口号
+    port: 15818

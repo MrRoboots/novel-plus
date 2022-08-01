@@ -1,11 +1,11 @@
 package com.java2nb.novel.service;
 
 
-import com.github.pagehelper.PageInfo;
-import com.java2nb.novel.search.BookSP;
+import io.github.xxyopen.model.page.PageBean;
+import com.java2nb.novel.entity.*;
 import com.java2nb.novel.vo.BookCommentVO;
 import com.java2nb.novel.vo.BookSettingVO;
-import com.java2nb.novel.entity.*;
+import com.java2nb.novel.vo.BookSpVO;
 import com.java2nb.novel.vo.BookVO;
 
 import java.util.Date;
@@ -31,7 +31,7 @@ public interface BookService {
 
     /**
      * 查询首页新书榜单数据
-     * @return
+     * @return 小说列表
      * */
     List<Book> listNewRank();
 
@@ -48,7 +48,7 @@ public interface BookService {
      * @param pageSize 分页大小
      * @return 小说集合分页信息
      * */
-    PageInfo searchByPage(BookSP params, int page, int pageSize);
+    PageBean<?> searchByPage(BookSpVO params, int page, int pageSize);
 
     /**
      * 查询小说分类列表
@@ -66,10 +66,12 @@ public interface BookService {
      * 查询目录列表
      * @param bookId 书籍ID
      * @param orderBy 排序
-     *@param limit 查询条数
+     * @param page 查询页码
+     *@param pageSize 分页大小
      *@return 目录集合
      * */
-    List<BookIndex> queryIndexList(Long bookId, String orderBy, Integer limit);
+    List<BookIndex> queryIndexList(Long bookId, String orderBy, Integer page, Integer pageSize);
+
 
     /**
      * 查询目录
@@ -99,6 +101,7 @@ public interface BookService {
      * @param bookIndexId 目录ID
      * @return 书籍内容
      * */
+    @Deprecated
     BookContent queryBookContent(Long bookIndexId);
 
     /**
@@ -112,7 +115,8 @@ public interface BookService {
     /**
      * 增加点击次数
      * @param bookId 书籍ID
-     * @param visitCount*/
+     * @param visitCount 点击量
+     * */
     void addVisitCount(Long bookId, Integer visitCount);
 
     /**
@@ -142,9 +146,9 @@ public interface BookService {
      * @param bookId 书籍ID
      * @param page 页码
      * @param pageSize 分页大小
-     * @return 评论集合
+     * @return 评论分页数据
      * */
-    List<BookCommentVO> listCommentByPage(Long userId, Long bookId, int page, int pageSize);
+    PageBean<BookCommentVO> listCommentByPage(Long userId, Long bookId, int page, int pageSize);
 
     /**
      * 新增评价
@@ -159,6 +163,7 @@ public interface BookService {
      * @param workDirection 作品方向
      * @return 作者ID
      * */
+    @Deprecated
     Long getOrCreateAuthorIdByName(String authorName, Byte workDirection);
 
 
@@ -176,6 +181,7 @@ public interface BookService {
      * @param bookId 小说ID
      * @return 目录号集合
      * */
+    @Deprecated
     List<Integer> queryIndexNumByBookId(Long bookId);
 
     /**
@@ -200,9 +206,9 @@ public interface BookService {
      * @param userId 用户ID
      * @param page 页码
      * @param pageSize 分页大小
-     * @return 小说集合
+     * @return 小说分页数据
      * */
-    List<Book> listBookPageByUserId(Long userId, int page, int pageSize);
+    PageBean<Book> listBookPageByUserId(Long userId, int page, int pageSize);
 
     /**
      * 发布小说
@@ -225,9 +231,9 @@ public interface BookService {
      * @param bookId 小说ID
      * @param indexName 章节名
      * @param content 章节内容
-     * @param authorId 作者ID
-     * */
-    void addBookContent(Long bookId, String indexName, String content, Long authorId);
+     * @param isVip 是否收费
+     * @param authorId 作者ID   */
+    void addBookContent(Long bookId, String indexName, String content, Byte isVip, Long authorId);
 
 
     /**
@@ -237,4 +243,51 @@ public interface BookService {
      * @return 书籍列表
      * */
     List<Book> queryBookByUpdateTimeByPage(Date startDate, int limit);
+
+    /**
+     * 查询作品列表
+     * @param authorId 作家ID
+     * @return 作品列表
+     */
+    List<Book> queryBookList(Long authorId);
+
+    /**
+     * 删除章节
+     * @param indexId
+     * @param authorId 作家ID
+     */
+    void deleteIndex(Long indexId, Long authorId);
+
+    /**
+     * 更新章节名
+     * @param indexId
+     * @param indexName
+     * @param authorId
+     */
+    void updateIndexName(Long indexId, String indexName, Long authorId);
+
+    /**
+     * 查询章节内容
+     * @param indexId
+     * @param authorId
+     * @return
+     */
+    String queryIndexContent(Long indexId, Long authorId);
+
+    /**
+     *  更新章节内容
+     * @param indexId
+     * @param indexName
+     * @param content
+     * @param authorId
+     */
+    void updateBookContent( Long indexId, String indexName, String content, Long authorId);
+
+    /**
+     * 修改小说封面
+     * @param bookId
+     * @param bookPic
+     * @param authorId
+     */
+    void updateBookPic(Long bookId, String bookPic, Long authorId);
 }

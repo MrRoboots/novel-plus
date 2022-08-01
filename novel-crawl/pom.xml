@@ -5,7 +5,7 @@
     <parent>
         <artifactId>novel</artifactId>
         <groupId>com.java2nb</groupId>
-        <version>2.6.5</version>
+        <version>3.6.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -34,6 +34,42 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <!-- 文件夹 -->
+                                <copy todir="${project.build.directory}/build/config" overwrite="true">
+                                    <fileset dir="${basedir}/src/main/build/config">
+                                        <include name="*.*"/>
+                                    </fileset>
+                                </copy>
+                                <copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar"
+                                      tofile="${project.build.directory}/build/${project.artifactId}.jar"/>
+
+                                <fixcrlf srcdir="${basedir}/src/main/build/scripts" eol="unix"/>
+                                <copy todir="${project.build.directory}/build/bin">
+                                    <fileset dir="${basedir}/src/main/build/scripts">
+                                        <include name="*.sh"/>
+                                        <include name="*.txt"/>
+                                        <include name="*.bat"/>
+                                    </fileset>
+                                </copy>
+                                <zip destfile='${project.build.directory}/build/${project.artifactId}.zip'>
+                                    <zipfileset filemode="755" dir='${project.build.directory}/build/'/>
+                                </zip>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
